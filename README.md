@@ -11,14 +11,20 @@ dot-job是一个分布式任务执行器，分为调度器job-schedule和执行�
 2 将执行结果保存至log日志表中
 
 
-整体架构如下图所示
+整体架构和流程图如下图所示
 
-![jm-job架构](https://github.com/agncao/jm-job/blob/master/jm-job%E6%9E%B6%E6%9E%84.png)
+![dot-job架构](https://github.com/shuxunyer/dot-job/blob/main/dot-job%20%E6%9E%B6%E6%9E%84%E5%9B%BE.jpg)
+
+![dot-job流程图](https://github.com/shuxunyer/dot-job/blob/main/dot-job%E6%B5%81%E7%A8%8B%E5%9B%BE.jpg)
+
+
 
 注：代码只能作为设计参考，未能完全调试代码，但以足够丰富完整。
 
 
 ## 数据库表相关设计
+![dot-job表关联图](https://github.com/shuxunyer/dot-job/blob/main/dot-job%E8%A1%A8%E5%85%B3%E8%81%94%E5%85%B3%E7%B3%BB%E5%9B%BE.jpg)
+
 1、dot_execute_group，执行器组表字段信息
 
 | 字段 | 字段注释 | 字段类型 | 备注         |
@@ -32,29 +38,28 @@ dot-job是一个分布式任务执行器，分为调度器job-schedule和执行�
 | 字段    | 字段注释     | 字段类型 | 备注            |
 | ------- | ------------ | -------- | --------------- |
 | id      | 关键字       | bigint   | 自增长          |
+| group_id | 所属分组     | bigint   |                 |
 | ip      | 节点ip地址   | varchar  | not null        |
 | port    | 节点端口号   | varchar  |                 |
 | executor_status | 节点是否禁用 | int      | 0否1是,not null |
-| group_id | 所属分组     | bigint   |                 |
 
 3、dot_job_info，任务表字段信息
 
 | 字段     | 关键字   | 字段类型 | 备注                                 |
 | -------- | -------- | -------- | ------------------------------------ |
 | id       | 关键字   | bigint   | 自增长                               |
+| job_group  | 所属分组 | bigint   |                                      |
 | name     | 任务名   | varchar  | not null                             |
 | executor_handler | 执行类的handler对象名称 | varchar  | not null                             |
 | executor_timeout | 任务执行超时时间 | varchar  | not null                             |
 | executor_fail_retry_count | 任务执行失败重试次数 | varchar  | not null                             |
 | trigger_status   | 状态     | int      | 0未开始1待执行2执行中3异常, not null |
-| disable  | 是否禁用 | int      | 0否1是,not null                      |
-| retry    | 是否重试 | int      | 0否1是,not null                      |
-| job_group  | 所属分组 | bigint   |                                      |
+                 |
 
 
 # 调度器对任务的管理
 
-TaskController
+DotJobInfoController
 
 ```java
     /**
@@ -73,4 +78,15 @@ TaskController
   
 ```
 
+其他要求：
+1 监控，如何超时检测
+超时:如果在指定时间内没有返回结果，就不再等待结果，这个时候就不再是同步执行了，而是用FutureTask异步获取
+结果，如果在指定超时时间内没有得到结果，就抛出异常，赋值结果502(也是属于失败的一种)
+2 可重试
+2.1 调度器怎么知道任务执行失败了
+2.2 执行失败后怎么处理
+如果任务失败，在job_log表中会有相应记录，服务启动时附加一个后台线程不断扫描失败的线程，将任务包装后放入待执行任务队列
+3 如果你在使用数据库，如何让交互更加快
+可以加一层缓存，后端管理业务涉及到任务的更新时，通过api接口触发缓存的更新，
+调度器只需从缓存里拿到最新的任务状态
 
