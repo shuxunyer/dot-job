@@ -82,7 +82,7 @@ DotJobInfoController
 
 
     /**
-     * 禁用,重新启用任务，相当于更新任务的状态
+     * 更新任务状态
      * @param id 任务id
      * @return
      */
