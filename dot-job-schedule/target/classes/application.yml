@@ -1,0 +1,27 @@
+spring:
+  profiles:
+    active: test
+  application:
+    name: dot-job-manager
+  logpath: /Users/shuxun/logs
+
+
+server:
+  port: 8806
+
+
+
+logging:
+  level:
+    com.project.azer_bd.mapper: debug
+
+
+# ====================MybatisPlus====================
+mybatis-plus:
+  mapper-locations: classpath*:mybatis/mapper/*.xml
+#  mapper-locations: classpath*:com/**/dao/xml/*.xml
+  #  type-aliases-package: com.gupaoedu.vip.mall.*.model
+  configuration:
+    type-aliases-package: com.project.azer_bd.mapper
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

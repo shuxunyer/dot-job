@@ -1,0 +1,21 @@
+#测试环境
+spring:
+  profiles:
+    include: mybatis-test
+  datasource:
+    oms:
+      url: jdbc:mysql://127.0.0.1:3306/dot-job
+      username: root
+      password: root
+  redis:
+    host: 127.0.0.1
+    port: 6379
+
+
+# ===== 自定义swagger配置 ===== #
+#swagger:
+#  enable: true
+#  application-name: ${spring.application.name}
+#  application-version: 1.0
+#  application-description: activity接口文档
+

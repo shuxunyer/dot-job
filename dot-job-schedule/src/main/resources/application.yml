@@ -1,0 +1,10 @@
+spring:
+  profiles:
+    active: test
+  application:
+    name: dot-job-schedule
+  logpath: /Users/shuxun/logs
+
+server:
+  port: 8806
+
