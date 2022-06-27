@@ -1,7 +1,9 @@
 # dot-job整体架构
 
-dot-job是一个分布式任务执行器，分为调度器job-schedule和执行器job-executor两部分,
-执行器可看成是集成dot-job服务的客户端，即我们的业务服务.<br />  
+dot-job是一个分布式任务执行器，分为调度器job-schedule和执行器job-executor两部分<br />
+调度器可看出是dot-job服务端，执行器可看成是集成dot-job服务的客户端，即我们的业务服务.<br />
+通过将调度器和执行器隔离，使得任务的执行流程解耦，同时提供扩展性<br />
+每个服务注册成一个执行器，服务下的每个示例相当于执行节点，可通过任务容量决定是否需要扩展执行节点
 **调度器job-schedule的职责**:<br />
 1 对任务job进行管理，可执行注册任务、提供任务管理的增删改查.<br />
 2 服务启动时初始化一个后台线程，重复循环将库表中可执行的任务存入任务队列中.<br />
@@ -16,6 +18,7 @@ dot-job是一个分布式任务执行器，分为调度器job-schedule和执行�
 ![dot-job架构](https://github.com/shuxunyer/dot-job/blob/main/dot-job%20%E6%9E%B6%E6%9E%84%E5%9B%BE.jpg)
 
 ![dot-job流程图](https://github.com/shuxunyer/dot-job/blob/main/dot-job%E6%B5%81%E7%A8%8B%E5%9B%BE.jpg)
+
 
 
 
